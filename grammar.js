@@ -136,7 +136,7 @@ module.exports = grammar({
   ],
 
   // `interface` and `inherits` are contextual: src/scanner.c says why.
-  externals: $ => [$._eof, $._interface_kw, $._inherits_kw, $._as_view_kw],
+  externals: $ => [$._eof, $._interface_kw, $._inherits_kw, $._as_view_kw, $._partial_kw],
 
   word: $ => $._word,
 
@@ -337,6 +337,10 @@ module.exports = grammar({
     modifier: $ => choice(
       kw('private'), kw('public'), kw('protected'), kw('static'),
       kw('virtual'), kw('abstract'), kw('shared'), kw('const'),
+      // `partial` is contextual, like `interface`: src/scanner.c says why, and only makes the
+      // token before `type` or `class`. A modifier because an optional token INSIDE
+      // class_definition blows up tree-sitter's analysis of `highlights.scm`.
+      alias($._partial_kw, 'partial'),
     ),
 
     procedure_definition: $ => seq(
